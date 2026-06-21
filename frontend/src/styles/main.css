@@ -264,6 +264,11 @@ th {
   color: #b42318;
 }
 
+.status-badge.failed {
+  background: #ffe2e2;
+  color: #b42318;
+}
+
 .toolbar {
   display: flex;
   gap: 10px;
@@ -271,6 +276,69 @@ th {
 
 .toolbar select {
   min-width: 120px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  min-width: 380px;
+  max-width: 480px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+.modal h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.preview-info {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.preview-info p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.preview-info .highlight {
+  color: #146c94;
+  font-size: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-secondary {
+  background: #e8eef3;
+  color: #1f2933;
+}
+
+.btn-secondary:hover {
+  background: #d0d8e0;
+}
+
+.result-summary {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: #f0f7fb;
+  border-radius: 6px;
+  color: #146c94;
+  font-size: 14px;
 }
 
 .notice {

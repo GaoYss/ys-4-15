@@ -156,15 +156,18 @@ class Reminder(models.Model):
     )
     PENDING = "pending"
     SENT = "sent"
+    FAILED = "failed"
     STATUS_CHOICES = (
         (PENDING, "待发送"),
         (SENT, "已发送"),
+        (FAILED, "发送失败"),
     )
 
     reminder_no = models.CharField("催缴编号", max_length=40, unique=True)
     bill = models.ForeignKey(Bill, related_name="reminders", on_delete=models.CASCADE)
     channel = models.CharField("催缴渠道", max_length=20, choices=CHANNEL_CHOICES, default=SMS)
     message = models.TextField("催缴内容")
+    result = models.TextField("催缴结果", blank=True, default="")
     status = models.CharField("状态", max_length=20, choices=STATUS_CHOICES, default=SENT)
     sent_at = models.DateTimeField("发送时间", default=timezone.now)
 

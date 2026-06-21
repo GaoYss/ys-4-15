@@ -14,7 +14,7 @@ from .serializers import (
     ReminderSerializer,
     RoomSerializer,
 )
-from .services import create_overdue_reminders, dashboard_stats, generate_bills, pay_bill
+from .services import create_overdue_reminders, dashboard_stats, generate_bills, pay_bill, preview_overdue_reminders
 
 
 class BuildingViewSet(viewsets.ModelViewSet):
@@ -105,10 +105,20 @@ class ReminderViewSet(viewsets.ModelViewSet):
     serializer_class = ReminderSerializer
 
     @action(detail=False, methods=["post"])
+    def preview_overdue(self, request):
+        total, skip_count = preview_overdue_reminders(request.data.get("channel", Reminder.SMS))
+        return Response({"total": total, "skip_count": skip_count, "actual_count": total - skip_count})
+
+    @action(detail=False, methods=["post"])
     def create_overdue(self, request):
-        reminders = create_overdue_reminders(request.data.get("channel", Reminder.SMS))
+        reminders, skipped = create_overdue_reminders(request.data.get("channel", Reminder.SMS))
         return Response(
-            {"created_count": len(reminders), "created": ReminderSerializer(reminders, many=True).data},
+            {
+                "created_count": len(reminders),
+                "skipped_count": len(skipped),
+                "created": ReminderSerializer(reminders, many=True).data,
+                "skipped": BillSerializer(skipped, many=True).data,
+            },
             status=status.HTTP_201_CREATED,
         )
 

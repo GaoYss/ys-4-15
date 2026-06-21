@@ -116,6 +116,7 @@ class ReminderSerializer(serializers.ModelSerializer):
             "due_date",
             "channel",
             "message",
+            "result",
             "status",
             "sent_at",
         ]

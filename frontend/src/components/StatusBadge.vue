@@ -11,6 +11,7 @@ const labels = {
   overdue: "已逾期",
   cancelled: "已作废",
   pending: "待发送",
-  sent: "已发送"
+  sent: "已发送",
+  failed: "发送失败"
 };
 </script>

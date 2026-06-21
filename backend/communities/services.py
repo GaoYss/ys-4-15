@@ -67,10 +67,17 @@ def create_overdue_reminders(channel=Reminder.SMS):
     overdue = Bill.objects.filter(status__in=[Bill.UNPAID, Bill.OVERDUE], due_date__lt=today).select_related(
         "room", "room__building", "fee_type"
     )
+    reminded_bill_ids_today = set(
+        Reminder.objects.filter(sent_at__date=today, channel=channel).values_list("bill_id", flat=True)
+    )
     reminders = []
+    skipped = []
     for bill in overdue:
         bill.status = Bill.OVERDUE
         bill.save(update_fields=["status"])
+        if bill.id in reminded_bill_ids_today:
+            skipped.append(bill)
+            continue
         message = (
             f"{bill.room.owner_name}您好，您位于{bill.room.building.name}-{bill.room.room_no}的"
             f"{bill.period}{bill.fee_type.name}欠费{bill.amount}元，请尽快缴纳。"
@@ -81,9 +88,26 @@ def create_overdue_reminders(channel=Reminder.SMS):
                 bill=bill,
                 channel=channel,
                 message=message,
+                result="发送成功",
             )
         )
-    return reminders
+    return reminders, skipped
+
+
+def preview_overdue_reminders(channel=Reminder.SMS):
+    today = timezone.localdate()
+    overdue = Bill.objects.filter(status__in=[Bill.UNPAID, Bill.OVERDUE], due_date__lt=today).select_related(
+        "room", "room__building", "fee_type"
+    )
+    reminded_bill_ids_today = set(
+        Reminder.objects.filter(sent_at__date=today, channel=channel).values_list("bill_id", flat=True)
+    )
+    total = overdue.count()
+    skip_count = 0
+    for bill in overdue:
+        if bill.id in reminded_bill_ids_today:
+            skip_count += 1
+    return total, skip_count
 
 
 def dashboard_stats():
